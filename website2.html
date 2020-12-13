@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="UTF-8">
+<title>
+Predict CPU Usage
+</title>
+<style>
+body
+{
+	background-color:#003040;
+	font-family: Impact, sans-serif;
+	margin:0;
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; 
+}
+#navbar{
+	background-color:#005060;
+	padding-left: 17px;
+	font-weight:666;
+	font-size:23px;
+	color:#f9f9f9dd;
+}
+#sub-navbar
+{
+	background-color:#004050;
+	width:100%;
+}
+.cent
+{
+	width:49%;
+	padding-top:10px;
+	padding-bottom:10px;
+	text-align:center;
+	display:inline-block;
+	font-weight:777;
+	font-size: 19px;
+	color:#888888;
+}
+red
+{
+	color:#cc9999;
+}
+blue
+{
+	color:#9999cc;
+}
+
+.dropbtn {
+  background-color: #4CAF50;
+  background-color: #407080;
+  box-shadow: 5px 5px 5px #00000077;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-weight:600;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  cursor:default;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropbtn_2:hover 
+{
+	background-color: #598999;
+	cursor:pointer;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+.wd
+{
+	width:50px;
+	margin-left:4px;
+}
+.gl
+{
+	display:none;
+	background-color:#004050;
+	color:#00a0a0;
+	font-weight:600;
+	border-radius:10px;
+	padding:10px;
+}
+#loader
+{
+	width:100%;
+	height:100%;
+	display:block;
+	position:fixed;
+	background-color:#003040;
+	z-index:10;
+}
+#main
+{
+	z-index:0;
+}
+#loadimg
+{
+	display: block;
+	padding:300px;
+	width:350px;
+	height:350px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.sub-graph
+{
+	display:inline-block;
+	padding-left:50px;
+	#padding-right:50px;
+	padding-top:10px;
+	padding-bottom:10px;
+	
+	
+}
+#graphbar
+{
+	background-color:#153540;
+	width:50%;
+	height:100%;
+	display:block;
+	position:fixed;
+}
+#graphbar2
+{
+	background-color:#153540;
+	width:50%;
+	height:100%;
+	right:0;
+	position:fixed;
+}
+.paddingleft
+{
+	padding-left:35%;
+}
+#footer
+{
+	width:100%;
+	bottom:0;
+	text-align:center;
+	background-color:#153540;
+	padding-top:4px;
+	padding-bottom:4px;
+	color: #0090a0;
+	position:fixed;
+}
+a:link {
+  color: #0090a0;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #0090a0;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #007080;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:active {
+  color: #0090a0;
+  background-color: transparent;
+  text-decoration: none;
+}
+</style>
+</head>
+<body id="store" hours="1" graph_max_limit="0" graph_min_limit="0" start_time="0" day="1" state="0" run="0">
+<div id="loader">
+<img id="loadimg" src="./static/img/Bean_Eater.svg">
+</div>
+<div id="main">
+<div id="navbar">
+CPU Utilization Observation Deck
+<div class="sub-graph paddingleft">
+<button class="dropbtn dropbtn_2" id="leftbtn0" onclick='day_run("left")'>&#60;</button>
+<div style="display:inline-block;cursor:default;"class="dropbtn" id="centerval0" onclick="">Day&nbsp;<span id="dayC">1</span></div>
+<button class="dropbtn dropbtn_2" id="rightbtn0" onclick='day_run("right")'>&#62;</button>
+</div>
+<div class="sub-graph">
+<button class="dropbtn dropbtn_2" id="leftbtn1" onclick='hour_run("left")'>&#60;</button>
+<div style="display:inline-block;cursor:default;" class="dropbtn" id="centerval1" onclick="">Hour&nbsp;<span id="hourC">0</span></div>
+<button class="dropbtn dropbtn_2" id="rightbtn1" onclick='hour_run("right")'>&#62;</button>
+</div>
+<div class="sub-graph">
+<button class="dropbtn dropbtn_2" id="leftbtn2" onclick='range_run("left")'>&#60;</button>
+<div style="display:inline-block;cursor:default;" class="dropbtn" id="centerval2" onclick="">Time Span&nbsp;<span id="rangeC">1</span></div>
+<button class="dropbtn dropbtn_2" id="rightbtn2" onclick='range_run("right")'>&#62;</button>
+</div>
+</div>
+<div id="sub-navbar">
+<div class="cent"><red>Selected CPU Utilization</red> vs <blue>Expected CPU Utilization</blue></div>
+<div class="cent">Density Distribution of <blue>Expected CPU Utilization</blue></div>
+</div>
+<div id="graphbar">
+
+<iframe id="puthere" src="/show_graph" height="85%" width="100%" title="Iframe Example" frameBorder="0"></iframe>
+</div>
+<div id="graphbar2">
+
+<iframe id="puthere_2" src="/show_graph_denom" height="85%" width="100%" title="Iframe Example" frameBorder="0"></iframe>
+
+</div>
+</div>
+<div id="footer">
+2020 | author: ashish.nair | <a href="https://www.nielit.gov.in/">NIELIT AI Project</a>
+</div>
+<script>
+var urlimg="";
+function day_run(dir)
+{
+	var elem=document.getElementById("dayC");
+	var pos=parseInt(elem.textContent);
+	if(dir=="left")
+	{
+		if(pos>1)
+		{
+			elem.textContent=(pos-1).toString();
+			document.getElementById('store').setAttribute("day",(pos-1).toString());
+			//document.getElementById('nd').textContent="Select nth Day";
+			
+		}
+	}
+	else if(dir=="right")
+	{
+		if(pos<29)
+		{
+			elem.textContent=(pos+1).toString();
+			document.getElementById('store').setAttribute("day",(pos+1).toString());
+			//document.getElementById('nd').textContent="Select nth Day";
+		}
+	}
+	send_get();
+}
+function hour_run(dir)
+{
+        var elem=document.getElementById("hourC");
+        var elem2=document.getElementById("rangeC");
+        var pos=parseInt(elem.textContent);
+        var pos2=parseInt(elem2.textContent);
+        if(dir=="left")
+        {
+                if(pos>0)
+                {
+                        elem.textContent=(pos-1).toString();
+			document.getElementById('store').setAttribute("start_time",(pos-1).toString());
+                }
+        }
+        else if(dir=="right")
+        {
+                if(pos<23)
+                {
+                        elem.textContent=(pos+1).toString();
+			document.getElementById('store').setAttribute("start_time",(pos+1).toString());
+			if((pos2+pos+1)>24)
+			{	
+				elem2.textContent=(24-(pos+1)).toString();
+				document.getElementById('store').setAttribute("hours",(24-(pos+1)).toString());
+				
+			}
+                }
+        }
+	send_get();
+}
+function range_run(dir)
+{
+        var elem2=document.getElementById("hourC");
+        var elem=document.getElementById("rangeC");
+        var pos2=parseInt(elem2.textContent);
+        var pos=parseInt(elem.textContent);
+        if(dir=="left")
+        {
+                if(pos>1)
+                {
+                        elem.textContent=(pos-1).toString();
+			document.getElementById('store').setAttribute("hours",(pos-1).toString());
+                }
+        }
+        else if(dir=="right")
+        {     
+                if(pos<24)
+                {
+                        elem.textContent=(pos+1).toString();
+			document.getElementById('store').setAttribute("hours",(pos+1).toString());
+                        if((pos2+pos+1)>24)
+                        {
+                                elem2.textContent=(24-(pos+1)).toString();
+				document.getElementById('store').setAttribute("start_time",(24-(pos+1)).toString());
+                        }
+                }
+        }
+	send_get();
+}
+
+function send_get()
+{
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function()
+	{
+		if (this.readyState == 4 && this.status == 200)
+		{
+			console.log(this.responseText);
+			document.getElementById('puthere').contentDocument.location.reload(true);
+			document.getElementById('puthere_2').contentDocument.location.reload(true);
+			document.getElementById("loader").style.display="none";
+		}
+	};
+	var st=document.getElementById('store').getAttribute('start_time');
+	var hrs=document.getElementById('store').getAttribute('hours');
+	var day=document.getElementById('store').getAttribute('day');
+	xhttp.open("GET", "http://127.0.0.1:5005/?start_time="+st+"&hours="+hrs+"&day="+day, true);
+	xhttp.setRequestHeader("Content-type", "text/plain");
+	xhttp.send();
+}
+
+send_get();
+</script>
+</body>
+</html>
